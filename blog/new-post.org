@@ -1,0 +1,14 @@
+#+TITLE:       Example Post
+#+AUTHOR:      Quinn Hart
+#+EMAIL:       qjhart@ucdavis.edu
+#+DATE:        2018-06-15 Fri
+#+URI:         /blog/%y/%m/%d/example-post
+#+KEYWORDS:    Example
+#+TAGS:        Emacs
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+DESCRIPTION: This is an example post.  I'm not sure how this works.
+
+** Example Post
+
+I'm still not sure how this all gets organized
