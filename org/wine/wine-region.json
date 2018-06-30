@@ -1,0 +1,677 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "rings": [
+          [
+            [
+              -123.28163886309517,
+              38.647533198823545
+            ],
+            [
+              -123.26139343002733,
+              38.64707565485771
+            ],
+            [
+              -123.26189092691313,
+              38.645898653896595
+            ],
+            [
+              -123.2515854952962,
+              38.638698338240474
+            ],
+            [
+              -123.25038976399122,
+              38.63155987011158
+            ],
+            [
+              -123.2440328825955,
+              38.62560942100202
+            ],
+            [
+              -123.24371000382789,
+              38.628426974009315
+            ],
+            [
+              -123.2400507138231,
+              38.63034016728925
+            ],
+            [
+              -123.23326662062775,
+              38.62858648066421
+            ],
+            [
+              -123.21971759170881,
+              38.63100351980675
+            ],
+            [
+              -123.21654355994237,
+              38.62091076478019
+            ],
+            [
+              -123.21951386278553,
+              38.619102829228346
+            ],
+            [
+              -123.21524847137366,
+              38.61703807513061
+            ],
+            [
+              -123.21082269385269,
+              38.61686058080425
+            ],
+            [
+              -123.21003462880337,
+              38.622004122788475
+            ],
+            [
+              -123.21179611727771,
+              38.624344006802744
+            ],
+            [
+              -123.20833429583698,
+              38.627810105308946
+            ],
+            [
+              -123.20531381400039,
+              38.62681287015491
+            ],
+            [
+              -123.19316899560097,
+              38.61849953872389
+            ],
+            [
+              -123.19327055643205,
+              38.6153644281422
+            ],
+            [
+              -123.18749495778873,
+              38.610486635274896
+            ],
+            [
+              -123.18656103688002,
+              38.604698208729324
+            ],
+            [
+              -123.18230700286831,
+              38.602853018851135
+            ],
+            [
+              -123.17862285737792,
+              38.60445482570432
+            ],
+            [
+              -123.17367862078396,
+              38.600342597933086
+            ],
+            [
+              -123.16219359519778,
+              38.600224450806905
+            ],
+            [
+              -123.16175974394986,
+              38.52723556281155
+            ],
+            [
+              -123.15507955259523,
+              38.52150011310437
+            ],
+            [
+              -123.15716937440757,
+              38.51730094172264
+            ],
+            [
+              -123.15454057869611,
+              38.512686224975894
+            ],
+            [
+              -123.1572987973855,
+              38.51085648088304
+            ],
+            [
+              -123.16271343318472,
+              38.51341023179437
+            ],
+            [
+              -123.16091689693958,
+              38.509742695861426
+            ],
+            [
+              -123.15873230196644,
+              38.50970661074736
+            ],
+            [
+              -123.15825767528945,
+              38.50597143405959
+            ],
+            [
+              -123.15462888129191,
+              38.504935761844784
+            ],
+            [
+              -123.15669022830639,
+              38.50267999293335
+            ],
+            [
+              -123.15610614191202,
+              38.49718340010321
+            ],
+            [
+              -123.17003171944525,
+              38.49986752998364
+            ],
+            [
+              -123.16541737656296,
+              38.50383947690335
+            ],
+            [
+              -123.16875217083263,
+              38.50387268620912
+            ],
+            [
+              -123.16989486380663,
+              38.50210704274204
+            ],
+            [
+              -123.17299293043939,
+              38.50277343177506
+            ],
+            [
+              -123.17250039764382,
+              38.50833520906778
+            ],
+            [
+              -123.1761748143797,
+              38.50682848507066
+            ],
+            [
+              -123.18024142119557,
+              38.512087185728134
+            ],
+            [
+              -123.18198165373364,
+              38.5119255800091
+            ],
+            [
+              -123.17847926706963,
+              38.50799045396344
+            ],
+            [
+              -123.17956732630469,
+              38.50640977284447
+            ],
+            [
+              -123.17587176592197,
+              38.504815471906106
+            ],
+            [
+              -123.18043391938119,
+              38.502465361667916
+            ],
+            [
+              -123.17413455172324,
+              38.50061516634117
+            ],
+            [
+              -123.17160183711964,
+              38.4965459100694
+            ],
+            [
+              -123.16618501392271,
+              38.49527688710608
+            ],
+            [
+              -123.16690205367406,
+              38.4924820909313
+            ],
+            [
+              -123.16944325106893,
+              38.49169222998435
+            ],
+            [
+              -123.16791634505464,
+              38.4897505572688
+            ],
+            [
+              -123.1746824153504,
+              38.489226293317984
+            ],
+            [
+              -123.17441781388852,
+              38.48784061802209
+            ],
+            [
+              -123.17678447311525,
+              38.489095255738654
+            ],
+            [
+              -123.18702551439094,
+              38.50385276414247
+            ],
+            [
+              -123.19622321905796,
+              38.51130773488021
+            ],
+            [
+              -123.1993663317106,
+              38.52037619909601
+            ],
+            [
+              -123.20255639840485,
+              38.5230019920663
+            ],
+            [
+              -123.20608696432102,
+              38.522074133996576
+            ],
+            [
+              -123.20979045143781,
+              38.52418023033273
+            ],
+            [
+              -123.22120171725433,
+              38.53435316796502
+            ],
+            [
+              -123.22754235890628,
+              38.545024089118705
+            ],
+            [
+              -123.23192844795969,
+              38.546918664822144
+            ],
+            [
+              -123.2388900024411,
+              38.54600700330198
+            ],
+            [
+              -123.24902796473287,
+              38.549730226840246
+            ],
+            [
+              -123.25187453003552,
+              38.5488002102558
+            ],
+            [
+              -123.25639294272689,
+              38.55321455379961
+            ],
+            [
+              -123.26846504070744,
+              38.55632407179949
+            ],
+            [
+              -123.27605792488232,
+              38.5713543191643
+            ],
+            [
+              -123.28754179613335,
+              38.572572431874
+            ],
+            [
+              -123.29439233501533,
+              38.582838242094645
+            ],
+            [
+              -123.30203479900736,
+              38.58811904424716
+            ],
+            [
+              -123.30511209838738,
+              38.588125723268725
+            ],
+            [
+              -123.30874041358287,
+              38.59267552400508
+            ],
+            [
+              -123.30814724072938,
+              38.59592137423648
+            ],
+            [
+              -123.31138954176247,
+              38.60204480299305
+            ],
+            [
+              -123.3030045159835,
+              38.601731602061975
+            ],
+            [
+              -123.301977995837,
+              38.6034146652403
+            ],
+            [
+              -123.29635265300138,
+              38.603943314726656
+            ],
+            [
+              -123.29331777386572,
+              38.603079131961586
+            ],
+            [
+              -123.29519654189197,
+              38.60156589707552
+            ],
+            [
+              -123.29257279111914,
+              38.60116083001678
+            ],
+            [
+              -123.29096244239473,
+              38.60270021195916
+            ],
+            [
+              -123.29245563463641,
+              38.60549102796873
+            ],
+            [
+              -123.28739806478958,
+              38.601735256153226
+            ],
+            [
+              -123.28556332229711,
+              38.6036415642433
+            ],
+            [
+              -123.28371511675343,
+              38.60037331886394
+            ],
+            [
+              -123.28150938981156,
+              38.60470403678148
+            ],
+            [
+              -123.28456066140451,
+              38.61031040018303
+            ],
+            [
+              -123.28673164779941,
+              38.610512942922114
+            ],
+            [
+              -123.28639779072071,
+              38.614455276076185
+            ],
+            [
+              -123.2880143450071,
+              38.61530757480232
+            ],
+            [
+              -123.29030240793467,
+              38.613017832066284
+            ],
+            [
+              -123.29340304913899,
+              38.61285741197129
+            ],
+            [
+              -123.29292400903901,
+              38.615540447969884
+            ],
+            [
+              -123.29813958805276,
+              38.61939528801179
+            ],
+            [
+              -123.30028765483151,
+              38.61114973273227
+            ],
+            [
+              -123.30532319080103,
+              38.6103478099457
+            ],
+            [
+              -123.31201990936026,
+              38.61495548584266
+            ],
+            [
+              -123.3197137363253,
+              38.6144648332871
+            ],
+            [
+              -123.32355095114687,
+              38.619400464244045
+            ],
+            [
+              -123.32711640223877,
+              38.61975095992445
+            ],
+            [
+              -123.32727314118787,
+              38.623766035708584
+            ],
+            [
+              -123.33079639302099,
+              38.62315284868981
+            ],
+            [
+              -123.33368703865462,
+              38.6247789172665
+            ],
+            [
+              -123.3332832396462,
+              38.62892551577841
+            ],
+            [
+              -123.33655348187787,
+              38.62926507421006
+            ],
+            [
+              -123.34077021514405,
+              38.63584291812776
+            ],
+            [
+              -123.34359504121682,
+              38.636223432755926
+            ],
+            [
+              -123.34882491063007,
+              38.64275813115305
+            ],
+            [
+              -123.3478907112436,
+              38.645366138350305
+            ],
+            [
+              -123.34353487565234,
+              38.647642994235355
+            ],
+            [
+              -123.33542393574804,
+              38.64599792778942
+            ],
+            [
+              -123.33403068826826,
+              38.64329971778427
+            ],
+            [
+              -123.32639053204818,
+              38.63974855273589
+            ],
+            [
+              -123.32733279561091,
+              38.64170637714902
+            ],
+            [
+              -123.29838614236057,
+              38.641737394703
+            ],
+            [
+              -123.29231829121262,
+              38.635363416830764
+            ],
+            [
+              -123.28945173480164,
+              38.634047368259594
+            ],
+            [
+              -123.28623829124876,
+              38.63542632121447
+            ],
+            [
+              -123.28378045391902,
+              38.63364657773918
+            ],
+            [
+              -123.28211149730882,
+              38.63423956311982
+            ],
+            [
+              -123.28163886309517,
+              38.647533198823545
+            ]
+          ]
+        ]
+      },
+      "attributes": {
+        "GISDATA.DBO.WineRegions.wbm_x": null,
+        "GISDATA.DBO.WineRegions.wbm_y": null,
+        "GISDATA.DBO.WineRegions.AGSP": 27637.85365853,
+        "GISDATA.DBO.WineRegions.VineyardCount": 23,
+        "GISDATA.DBO.WineRegions.Counties": "Sonoma",
+        "GISDATA.DBO.WineRegions.States": "California",
+        "GISDATA.DBO.WineRegions.Designation": "American\nViticultural\nArea",
+        "GISDATA.DBO.WineRegions.Level_": 3,
+        "GISDATA.DBO.WineRegions.Name": "Fort\nRoss-Seaview",
+        "GISDATA.DBO.wineRegionsGeneralized.WineRegionID": 33,
+        "GISDATA.DBO.wineRegionsGeneralized.OBJECTID": 240,
+        "GISDATA.DBO.WineRegions.TotalPlanted": 506.81416195,
+        "GISDATA.DBO.WineRegions.Acres": 32035.27477092,
+        "GISDATA.DBO.WineRegions.Varietals": "Pinot\nNoir",
+        "GISDATA.DBO.WineRegions.ElevationLow": 869.92526784,
+        "GISDATA.DBO.WineRegions.ElevationHi": 1698.91459597,
+        "GISDATA.DBO.WineRegions.ElevationAve": 1331.35500018,
+        "GISDATA.DBO.WineRegions.AGSHT": 2268.74390243,
+        "GISDATA.DBO.WineRegions.AGSLT": 1000.12775841
+      }
+    }
+  ],
+  "fields": [
+    {
+      "alias": "OBJECTID",
+      "type": "esriFieldTypeInteger",
+      "name": "GISDATA.DBO.wineRegionsGeneralized.OBJECTID"
+    },
+    {
+      "alias": "WineRegionID",
+      "type": "esriFieldTypeInteger",
+      "name": "GISDATA.DBO.wineRegionsGeneralized.WineRegionID"
+    },
+    {
+      "length": 50,
+      "alias": "Region\nName",
+      "type": "esriFieldTypeString",
+      "name": "GISDATA.DBO.WineRegions.Name"
+    },
+    {
+      "alias": "Level",
+      "type": "esriFieldTypeSmallInteger",
+      "name": "GISDATA.DBO.WineRegions.Level_"
+    },
+    {
+      "length": 50,
+      "alias": "Designation",
+      "type": "esriFieldTypeString",
+      "name": "GISDATA.DBO.WineRegions.Designation"
+    },
+    {
+      "length": 100,
+      "alias": "States",
+      "type": "esriFieldTypeString",
+      "name": "GISDATA.DBO.WineRegions.States"
+    },
+    {
+      "length": 300,
+      "alias": "Counties",
+      "type": "esriFieldTypeString",
+      "name": "GISDATA.DBO.WineRegions.Counties"
+    },
+    {
+      "alias": "Number\nof\nVineyards",
+      "type": "esriFieldTypeSmallInteger",
+      "name": "GISDATA.DBO.WineRegions.VineyardCount"
+    },
+    {
+      "alias": "Total\nPlanted\nAcres",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.TotalPlanted"
+    },
+    {
+      "alias": "Acres",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.Acres"
+    },
+    {
+      "length": 100,
+      "alias": "Varietals",
+      "type": "esriFieldTypeString",
+      "name": "GISDATA.DBO.WineRegions.Varietals"
+    },
+    {
+      "alias": "ElevationLow",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.ElevationLow"
+    },
+    {
+      "alias": "ElevationHi",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.ElevationHi"
+    },
+    {
+      "alias": "ElevationAve",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.ElevationAve"
+    },
+    {
+      "alias": "AGSHT",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.AGSHT"
+    },
+    {
+      "alias": "AGSLT",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.AGSLT"
+    },
+    {
+      "alias": "AGSP",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.AGSP"
+    },
+    {
+      "alias": "GISDATA.DBO.WineRegions.wbm_y",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.wbm_y"
+    },
+    {
+      "alias": "GISDATA.DBO.WineRegions.wbm_x",
+      "type": "esriFieldTypeDouble",
+      "name": "GISDATA.DBO.WineRegions.wbm_x"
+    }
+  ],
+  "spatialReference": {
+    "wkid": 4326
+  },
+  "geometryType": "esriGeometryPolygon",
+  "fieldAliases": {
+    "GISDATA.DBO.WineRegions.wbm_x": "GISDATA.DBO.WineRegions.wbm_x",
+    "GISDATA.DBO.WineRegions.wbm_y": "GISDATA.DBO.WineRegions.wbm_y",
+    "GISDATA.DBO.WineRegions.AGSP": "AGSP",
+    "GISDATA.DBO.WineRegions.VineyardCount": "Number\nof Vineyards",
+    "GISDATA.DBO.WineRegions.Counties": "Counties",
+    "GISDATA.DBO.WineRegions.States": "States",
+    "GISDATA.DBO.WineRegions.Designation": "Designation",
+    "GISDATA.DBO.WineRegions.Level_": "Level",
+    "GISDATA.DBO.WineRegions.Name": "Region\nName",
+    "GISDATA.DBO.wineRegionsGeneralized.WineRegionID": "WineRegionID",
+    "GISDATA.DBO.wineRegionsGeneralized.OBJECTID": "OBJECTID",
+    "GISDATA.DBO.WineRegions.TotalPlanted": "Total Planted\nAcres",
+    "GISDATA.DBO.WineRegions.Acres": "Acres",
+    "GISDATA.DBO.WineRegions.Varietals": "Varietals",
+    "GISDATA.DBO.WineRegions.ElevationLow": "ElevationLow",
+    "GISDATA.DBO.WineRegions.ElevationHi": "ElevationHi",
+    "GISDATA.DBO.WineRegions.ElevationAve": "ElevationAve",
+    "GISDATA.DBO.WineRegions.AGSHT": "AGSHT",
+    "GISDATA.DBO.WineRegions.AGSLT": "AGSLT"
+  },
+  "displayFieldName": "GISDATA.DBO.WineRegions.Name"
+}

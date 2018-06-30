@@ -1,0 +1,18 @@
+#+SETUPFILE: /home/quinn/org-html-themes/setup/theme-bigblow.setup
+#+TITLE: Wine Economics
+
+* Economics
+
+ From the [[https://services.everyvine.com/datapages/v/20120530/iframeMap.php?wineRegionID=33][grapevines.com]] site, it would be possible to obtain AVA's. We'd have
+ to scrape that information, but you can see an example for [[file:wine-region.json][Fort Ross]]. They
+ state in their website that they work with the AVA free of charge, I wonder
+ what that means. We'd need to decide what the licensing would be in that case.
+ These queries don't work outside the application, but maybe we just need to set
+ the referer for that infomation.
+
+ In terms of price posting, I did review the beverage industry news
+ (HD9350.1.B4). They are fair price postings that, for some of the major
+ producers of wine. Also, while trying to discover more information about the
+ differences between ABC price and "Stop Prices" I found an [[http://scholarship.law.berkeley.edu/cgi/viewcontent.cgi?article=3768&context=californialawreview][review from 1939]]
+ about price posting. Interestingly, they list some additional wine postings in
+ a grocer's list from 1932. Still can't see if this is a requirement or not.

@@ -1,0 +1,38 @@
+#+SETUPFILE: /home/quinn/org-html-themes/setup/theme-bigblow.setup
+#+TITLE: Quinn's Projects
+
+* Development Projects
+
+The quinn-dev site is primary designed to provide a testing environment for
+various web services projects for the library. These are projects in the
+earliest stage of development, and should not be considered reliable or vetted
+in anyway. Currently these are mostly realated to Linked database activities.
+
++ [[file:sufia.org][Sufia]] - [[http://quinn-dev.library.ucdavis.edu:3000]] Is an instance of the
+  digital asset manager. This site is used as a first check on various aspects
+  customization, and to provide a completely transparent implementation, so
+  users can see how instances are represented in solr and fedora as well.
+
++ Marmotta - Is an instance of the the Apache Linked Data project.
+
+* Environment
+
+** Emacs
+
+I have started to follow some more detailed notes on [[file:configuration.org][Configuration]] for emacs
+* DONE Review Auth0
+	CLOSED: [2017-12-20 Wed 17:25]
+
+There are two great samples in Auth0,
+[[https://github.com/auth0-blog/nodejs-jwt-authentication-sample]] and
+[[https://github.com/auth0-blog/polymer-with-jwt-api]] that are both super great
+reads.  The first shows a quick jwt example API server, and the second
+incorporates that server into a polymer project.  From these I can scope of the
+host only solution, before moving to a single sign-on solution.
+
+[[https://github.com/auth0-samples/auth0-anonymous-tracker]] shows an example of
+using an anonymous tracker, which I should be able to include for my more
+complete Oauth2 solution.  Note, too that the default Auth0 quick start (like
+01-login) on my machine is the other component, the Auth0 user sign in.
+* TODO Decide on Whether to use Org-journal or org-til
+* TODO sd

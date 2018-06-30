@@ -1,0 +1,449 @@
+
+* 2016
+** 2016-09 September
+*** 2016-09-15
+
+ Here are a couple of examples of getting org-mode's code to run.  They are pretty fancy. :)
+
+ #+BEGIN_SRC js
+   var foo=1;
+   var bar=2;
+   var l=[1,2,3];
+   l.forEach(function(v) {
+       var n=v+bar;
+       console.log('Value:'+n);
+   });
+ #+END_SRC
+
+ #+RESULTS:
+ : Value:3
+ : Value:4
+ : Value:5
+ : undefined
+
+
+ This is one that I really like, Nice way  to document some example queries within org-mode.
+
+ #+name: test
+ #+header: :engine postgresql
+ #+header: :database quinn
+ #+BEGIN_SRC sql
+ select name from california_counties limit 5;
+ #+END_SRC
+
+ #+RESULTS: test
+ | name      |
+ |-----------|
+ | Siskiyou  |
+ | Del Norte |
+ | Modoc     |
+ | Trinity   |
+ | Shasta    |
+
+
+ \begin{align*}
+ 3 * 2 + &= 6 +1 \\
+ & =7
+ \end{align*}
+
+
+**** Hobbes
+
+ Yesterday, I submitted a list of the links with the greatest
+ differences in flow to Jon.  We saw that a lot of the differences were
+ in the pumping.  We can investigate these in more detail, by getting
+ the flows to Google sheets.  These can get in okay, but
+
+ #+name: test
+ #+header: :engine postgresql
+ #+BEGIN_SRC sql
+ --\COPY (
+	select prmname,(unnest(s.flow)).ymd ymd,
+	(unnest(s.flow)).val as s_val,
+	(unnest(h.flow)).val as h_val
+	from hobbes09.link h join "S09I05".link s
+	using (prmname) where prmname in ('PMP_Banks-D800');
+ --) to ~/Downloads/pmp_bank-d800.csv with csv header
+ #+END_SRC
+*** 2016-09-22
+
+ See [[http://orgmode.org/manual/Evaluating-code-blocks.html#Evaluating-code-blocks][Evaluating Code Blocks]] for notes on evaluating code in other locations.  That can be useful to save functions as well.
+
+ #+name: my-query
+ #+header: :engine postgresql :cmdline "service=managethis"
+ #+begin_src sql
+   SELECT identifier FROM labels_label limit 5
+ #+end_src
+
+ #+CALL: my-query()
+
+ #+RESULTS:
+ | identifier |
+ |------------|
+ |       0002 |
+ |       0003 |
+ |       0004 |
+ |       0005 |
+ |       0006 |
+
+
+**** dir colors
+
+ In the process of trying to get a nice tree output, I found this great github website, [[https://github.com/trapd00r/LS_COLORS][LS_COLORS]], that gave me a much better set of colors for my dir command, and therefore the tree command as well.
+
+**** Sharing code between cmd-line and web-components
+
+ Rather than making three repos for a single project just to not include cmd-line code in a web-component, and visa-versa, it'd be nice to just have one.  I have an idea that we could make a single version, but then have a few branches, that just have a .gitattributes file in there that eliminates certain files, and then switch branches before makeing releases.
+
+ I'll test this using the polymer-cli.
+
+ #+BEGIN_SRC bash
+ mkdir ~/scriptAPI-vision && cd ~/scriptAPI-vision
+ polymer init
+ #+END_SRC
+
+ I'm looking at a few different generators, to compare.  If we try the grunt generator for node, there are some pretty nice features including; =.jshintrc= for jshint checking, and =.travis.yml= for github testing.  tasks include *nodeunit* and *jshint*
+
+ #+BEGIN_SRC bash :dir ~/scribeAPI-vision
+ git checkout -b grunt
+ git clone https://github.com/gruntjs/grunt-init-node ~/.grunt-init/node
+ grunt-init node
+ #+END_SRC
+
+ #+BEGIN_SRC bash :dir ~/scribeAPI-vision :results type scalar
+ tree -I node_modules
+ #+END_SRC
+
+ #+RESULTS:
+ #+begin_example
+ .
+ ├── bower.json
+ ├── demo
+ │   └── index.html
+ ├── Gruntfile.js
+ ├── index.html
+ ├── lib
+ │   └── scribeAPI-tools.js
+ ├── LICENSE-MIT
+ ├── package.json
+ ├── README.md
+ ├── scribeAPI-fetch.html
+ ├── scribeAPI-vision.html
+ └── test
+     ├── scribeAPI-tools_test.js
+     └── scribeAPI-vision_test.html
+
+ 3 directories, 12 files
+ #+end_example
+
+*** 2016-09-23
+
+ Continuing with [[*Sharing%20code%20between%20cmd-line%20and%20web-components][Sharing code between cmd-line and web-components]] I want to look instead at yeoman.   The advantages to yeoman are of coruse they are closer to the polymer-cli, though that doesn't affect our generator much.  I'll try the [[https://github.com/yeoman/generator-node][Yeoman Node Generator]], as a comparison.
+
+ #+BEGIN_SRC bash :dir /sudo::
+ npm install -g generator-node
+ #+END_SRC
+
+ #+BEGIN_SRC bash :dir ~/scribeAPI-vision :results type scalar
+ mv bower_components .bower_components
+ tree -I node_modules
+ mv .bower_components bower_components
+ #+END_SRC
+
+ #+RESULTS:
+ #+begin_example
+ .
+ ├── bower.json
+ ├── coverage
+ │   ├── coverage-final.json
+ │   ├── lcov.info
+ │   └── lcov-report
+ │       ├── base.css
+ │       ├── index.html
+ │       ├── lib
+ │       │   ├── index.html
+ │       │   ├── index.js.html
+ │       │   └── scribeAPI-tools.js.html
+ │       ├── prettify.css
+ │       ├── prettify.js
+ │       ├── sort-arrow-sprite.png
+ │       └── sorter.js
+ ├── demo
+ │   └── index.html
+ ├── dist
+ │   ├── index.js
+ │   └── scribeAPI-tools.js
+ ├── Gruntfile.js
+ ├── gulpfile.js
+ ├── index.html
+ ├── lib
+ │   └── index.js
+ ├── LICENSE
+ ├── package.json
+ ├── README.md
+ ├── scribeAPI-fetch.html
+ ├── scribeAPI-vision.html
+ └── test
+     ├── index.js
+     └── scribeAPI-vision_test.html
+
+ 7 directories, 26 files
+ #+end_example
+
+ The yeoman file does some stuff I really like.  That includes the =.editorconfig= file, and maybe the =.babelrc=
+
+*** 2016-09-28
+
+ OK, Justin showed me a nice new set of developer videos: [[https://www.youtube.com/watch?v%3DCubrYp4cuyY][Developer Diaries]],
+ which follows along a developer has he sets up a new development environment.
+ Dairy #1 shows examples for [[https://travis-ci.org/getting_started][travis-ci]], and [[https://github.com/GoogleChrome/lighthouse][Lighthouse]], which is gives you a
+ score on how progressive your web app will be.
+
+** 2016-10 October
+*** 2016-10-05
+
+ Saw an interesting tool [[https://hubot.github.com/][Hubot]] that can be used to integrate with slack, for some
+ automated tasks. The context I saw that in, was using it to automate github
+ requests for issue tracking. [[http://devblog.edsurge.com/scrum-kanban-trello-github-issues/][Github Scrum]].
+
+*** 2016-10-10
+
+ Looking into methods of reification on the our RDF database, I found of couple
+ of references,[[http://patterns.dataincubator.org/book/index.html][Linked Data Patterns]] compares reification to Quads representation,
+ but I don't feel that that's exactly what I'm looking for, alhtough a catalog of
+ processing is interesting.
+
+ [[https://mor.nlm.nih.gov/pubs/pdf/2014-www-vn.pdf][SingletonsProperty]] is an alternative method using a new property to add metadat
+ about assertions.
+
+ In terms of Linked data repositories, [[http://hydrainabox.projecthydra.org/][HydraInABox]] is an upcoming
+ integration,(see [[https://github.com/projecthydra-labs/lerna][github) ]] Note that this includes sufia 7 as the DAMS component.
+
+ Installation Examples
+
+ The Virtual Box implementation of fedora repository was pretty hard to
+ understand, I gave it a quick try, but then abandoned that as a possibility.
+
+ Docker seems to be a good choice for sufia, since lots of the components, like
+ Solr have their own setups already.
+
+ There are two examples out there, [[https://github.com/mjgiarlo/docker-sufia][docker-sufia]] is a 3 year old, quick
+ installation of scholarshare from psu. as it's installation. Everything is added
+ to a single instance. This is a pretty simple example to follow along with.
+
+ [[https://bitbucket.org/uwlib/docker-sufia][uwlib/docker-sufia]] is a later version, that divided sufia into a number of
+ docker images. This uses a CentOS distribution,
+
+
+** 2016-11 November
+*** 2016-11-04 Friday
+**** Polycasts in JSBIN
+
+[[https://www.youtube.com/watch?v=vyph_r8wUpc][Polymer Podcast #45]] includes a good introduction of useing polymer, and your own
+web-components in tools like jsbin, and [[http://codepen.io/StijnDeWitt/pen/EyPyyL][codepen]]
+**** IDO Mode
+
+There is a nice [[https://www.masteringemacs.org/article/introduction-to-ido-mode][tutorial]] that helps you remember some nice things to remember,
+like the fallback for the original is, like C-f in your find files.
+** 2016-12 December
+*** 2016-12-23 Friday
+**** NPM Lodash
+
+The [[https://www.npmjs.com/package/lodash]] module is a very friendly npm module
+with a lot of nice features for things like fining entries in an arry, and
+replicating objects. Definitely something to add into node projects.
+**** PDF.JS
+
+We should definately be able to use the same PDF file for our map software.
+This, [[https://www.youtube.com/watch?v%3DIv15UY-4Fg8][video]] gives an introduction into pdf.js, first few minutes are pretty
+helpful.  This [[https://www.youtube.com/watch?v%3DTstpR_gGb-4&t%3D89s][intro]] also shows a simple example
+* 2017
+** 2017-06 June
+*** 2017-06-22 Thursday
+**** iMAC Radeon Badness
+
+I updated to linuxminut 18 on quinn.library.ucdavis.edu.  Things did not go
+well. I ended up with a bad video setup, which is kinda explained here:
+[[https://community.linuxmint.com/tutorial/view/842][linuxmint]], and with the notice to set nomodeset, in your grub boot to at least
+get to a bootable sceen.  I ended up doing that, and fixing the grub so that you
+can at least see when you are supposed to press <ESC> to get to the screen.
+
+Then I spent forever trying to see what went wrong.  In the end I finally found
+this: [[https://bugs.freedesktop.org/show_bug.cgi?id=98046][freedesktop bug]] which shows that the radeon driver is wrong for older
+iMACs. As a result, I am pretty much stuck on kernel 3.13 for that to work in
+any reasonable manner.
+** 2017-10 October
+*** 2017-10-31 Tuesday
+**** Updates to mint
+
+I can't seem to find the information that I had related to why I can't update
+the kernel for my mint computer.  That's frustrating, since there are some mesa
+updates that I guess might fix it.
+**** polymer Icon
+
+In order to create the icons that Kimmy needs, we might want to use the
+[[http://www.naturalearthdata.com/downloads/110m-physical-vectors/][Small Scale Vectors]] for generating Coutnries, Earthshots and cities.
+** 2017-12 December
+*** 2017-12-20 Wednesday
+**** DONE Where do the til links go?
+		 CLOSED: [2017-12-20 Wed 17:24]
+* 2018
+** 2018-01 January
+*** 2018-01-16 Tuesday
+**** Notes about JSON-LD, contexts, and frames
+
+Thru some reading through the JSON-LD specs, I've started to understand a little
+more about how the @context and @framing documents work for JSON compaction.  We
+should be able to utilize these to create JSON documents that we'd like to see
+in our applications.  It's possible however, that we won't be able to use
+Fedora's version of the compaction for our own purposes, though maybe we can.
+
+Fedora seems to use a Apache jena riot for it's formatting, so that's
+definiately worth a look as well.
+
+A good Library example is this [[http://journal.code4lib.org/articles/7949][bibjson]] example from code for lib.
+
+The [[https://github.com/digitalbazaar/jsonld-cli][jsonld-cli]] tool might be a good method to create these documents.  I should
+add this tool and start testing it.
+
+
+http://markbirbeck.com/2016/11/14/schema.org-json-ld-elasticsearch-1/
+** 2018-04 April
+*** 2018-04-17 Tuesday
+**** Using HTTP for EZ Id
+
+Here are some notes about using httpie for generating EZids.  Lot's of these
+notes are available in the [[https://ezid.cdlib.org/doc/apidoc.html][API Docs]], only slightly modified for use with HTTPie.
+
+**** EZID Authentication
+
+ EZID allows basic authentication.  You can easily use this by adding the ezid
+ api to your .netrc file, example below.
+
+ #+BEGIN_EXAMPLE
+ machine ezid.cdlib.org
+   login ucd-qjhart
+   password secret-password
+ #+END_EXAMPLE
+
+ This makes it easy to use the API without any additional values on the command-line.
+
+ #+BEGIN_SRC bash :results scalar
+ http GET https://ezid.cdlib.org/id/ark:/85140/d4zx08
+ #+END_SRC
+
+ #+RESULTS:
+ : success: ark:/85140/d4zx08
+ : _updated: 1480544681
+ : _target: https://labelthis.lib.ucdavis.edu/view/2603
+ : _profile: erc
+ : _export: yes
+ : _owner: ucd-library
+ : _ownergroup: ucd-library
+ : _created: 1461090788
+ : _status: unavailable
+
+ You can also use httpie's `--session` variable. This can allow you to save a
+ session specifically for adding data for example.  In this case, you don't save
+ your credentials in your .netrc file.  Instead, you pass the credentials on a `/login` to a
+ session.  The session will store your Cookie, and you can then use that session
+ for edits. This allows multiple username combinations as well. For example:
+
+ #+BEGIN_SRC bash :results scalar
+ http --session=qjhart -a ucd-qjhart:${PASSWORD} https://ezid.cdlib.org/login
+ http --session=qjhart PUT https://ezid.cdlib.org/id/ark:/99999/fk4qjhart2
+ http GET https://ezid.cdlib.org/id/ark:/99999/fk4qjhart2
+ #+END_SRC
+
+ #+RESULTS:
+ : error: method not allowed
+
+ From here, you can then make your updates to the data.
+
+ #+BEGIN_SRC bash :results scalar
+ http --session=qjhart POST https://ezid.cdlib.org/id/ark:/99999/fk4zp5806q Content-Type:text/plain <<<'_target:https://library.ucdavis.edu'
+ http GET https://ezid.cdlib.org/id/ark:/99999/fk4zp5806q
+ #+END_SRC
+
+ #+RESULTS:
+ : success: ark:/99999/fk4zp5806qsuccess: ark:/99999/fk4zp5806q
+ : _updated: 1524003099
+ : _target: https://library.ucdavis.edu
+ : _profile: erc
+ : _export: yes
+ : _owner: ucd-qjhart
+ : _ownergroup: ucd-library
+ : _created: 1524001735
+ : _status: public
+
+ #+BEGIN_SRC bash :results scalar
+ http GET https://ezid.cdlib.org/id/ark:/99999/fk4qjhart2
+ http --session=qjhart POST https://ezid.cdlib.org/shoulder/ark:/99999/fk4
+ #+END_SRC
+
+ #+RESULTS:
+ : success: ark:/99999/fk4q53tc7s
+
+** 2018-06 June
+*** 2018-06-15 Friday
+**** Location for ZAT
+
+George had sent a note for me that ZAT had been moved to
+[[quinn@apollo.cstars.ucdavis.edu:2225/proj/gis-data/atlas][quinn@apollo.cstars.ucdavis.edu:2225/proj/gis-data/atlas]]
+I reviewed that and see that indeed we still have NAIP imagery there.
+*** 2018-06-19 Tuesday
+**** ORCID Initial Steps
+
+I'm starting to read through the OrcID API, in order to understand what we can
+do as a member organization.  Basically, one of the main things that can be done
+is that users can login via ORCID's Oauth system, and from that setup, we can
+verify that they are who they say they are, and then access and update data on
+their behalf.  ORCID includes two and three legged [[http://members.orcid.org/api/oauth/presenting-oauth][OAuth]] authentication.
+
+I need to understand more, the difference between institutional and individual
+accounts, and how to link them.
+
+Comparison of features https://orcid.org/about/membership
+
+
+Integration with Fedora, https://www.youtube.com/watch?v=OFNKcs1RQ1Q
+- CRIS gets info from ORCID, connects to other items
+- Their have a fedora info, they can link to the grant, and
+- The idenifier is shown in PRIMO 10:15
+- Primo  gets ORCID from the institutinal data. <mods:nameIdentifier
+  type="orcid" typeURI="http://id.loc.gov/vocabulary/identifiers/orcid">000-0003
+- Convert to mods:note => PNX links/lln44 ?
+
+For Sandbox Development, we need the following items:
+Title: 'UC Davis Pilot Project'
+Description:
+Level: Basic
+URL of Home Page:
+[[https://support.orcid.org/knowledgebase/articles/116739#Redirect][Redirect URLS]]: Where is our test site?
+NOte, you can use http://localhost as your redirection
+
+Here's an integration example
+http://openvivo.org/people
+
+Membership API
+https://api.sandbox.orcid.org/v2.0/#/Development_Member_API_v3.0_rc1
+
+
+*** Update Example
+https://members.orcid.org/api/tutorial/update-orcid-records
+
+*** Google OAUTH Playground
+http://members.orcid.org/api/explore-orcid-api-google-oauth-playground
+
+Open researcher and institutional repository
+
+Standard method for connecting researchers to institutions.
+Automated public control - Enter once  resuse often
+
+
+
+*** CAS
+
+Can we associated ORCID's with a CAS user, so that we can identify someone's
+ORCID through their CAS account?
+*** 2018-06-26 Tuesday

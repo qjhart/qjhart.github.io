@@ -1,0 +1,602 @@
+* AVAs
+
+It's possible to extract all the wine growing AVAs from the [[https://services.everyvine.com/datapages/v/20120530/iframeMap.php?wineRegionID=33][grapevines.com]] site,
+it would be possible to obtain AVA's. We'd have to scrape that information, but
+you can see an example for [[file:wine-region.json][Fort Ross]]. They state in their website that they work
+with the AVA free of charge, I wonder what that means.
+
+It's quite easy to script that download, you can grab the key from the
+grapevines site, and by setting the referer on the command-line get, you can
+get any region you'd like.  The size you choose affects the resolution of the
+vectors however, so you can't get everything in one go.
+
+
+We'd need to decide what the licensing would be in that case.
+
+The output from this file is readable directly by ogr, so you can import
+directly with something like this.  Note ogr is smart enough tp put that in the
+correct schema, `climate`.
+
+#+BEGIN_SRC bash
+ogr2ogr -f "Postgresql" PG:"dbname=wine-ontology" ava_esri.json -nln climate.ava
+#+END_SRC
+
+#+BEGIN_SRC psql
+alter table avas rename ogc_fid to avas_id;
+-- Add 3301 boundary
+alter table avas add column boundary geometry(MultiPolygon,3310);
+update avas set boundary=st_Multi(st_transform(st_makeValid(wkb_geometry),3310));
+CREATE INDEX avas_gix ON avas USING GIST (boundary);
+-- fix names
+alter table avas rename "gisdata.dbo.wineregions.name" to name;
+alter table avas rename "gisdata.dbo.wineregions.level_" to level;
+alter table avas rename "gisdata.dbo.wineregions.designation" to designation;
+alter table avas rename "gisdata.dbo.wineregions.states" to states;
+alter table avas rename "gisdata.dbo.wineregions.counties" to counties;
+alter table avas rename "gisdata.dbo.wineregions.vineyardcount" to vineyardcount;
+alter table avas rename "gisdata.dbo.wineregions.totalplanted" to totalplanted;
+alter table avas rename "gisdata.dbo.wineregions.acres" to acres;
+alter table avas rename "gisdata.dbo.wineregions.varietals" to varietals;
+alter table avas rename "gisdata.dbo.wineregions.elevationlow" to elevationlow;
+alter table avas rename "gisdata.dbo.wineregions.elevationhi" to elevationhi;
+alter table avas rename "gisdata.dbo.wineregions.elevationave" to elevationave;
+alter table avas rename "gisdata.dbo.wineregions.agsht" to agsht;
+alter table avas rename "gisdata.dbo.wineregions.agslt" to agslt;
+alter table avas rename "gisdata.dbo.wineregions.agsp" to agsp;
+
+#+END_SRC
+
+The following source shows how you could convert that to a geojson file, if you
+were interested.  This is good for quick display, but probably not needed.
+
+#+BEGIN_SRC jq
+#! /usr/bin/jq -f
+
+# This conflates all the layers in the ESRI JSON file, and uses the
+# titles in attributes.
+def toGeoJSON:
+{"type
+def toGeoJSON:
+{
+def toGeoJSON:
+{":"FeatureCollection",
+ "crs": {"type":"name",
+     "properties": {"name":"urn:ogc:def:crs:EPSG::3857"}
+    },
+ "features":[.features[]
+       | . as $layer
+       | {"type":"Feature",
+        "properties":.attributes
+        | {
+				"AGSP":.["GISDATA.DBO.WineRegions.AGSP"],
+ 				"VineyardCount":.["GISDATA.DBO.WineRegions.VineyardCount"],
+ 				"Counties":.["GISDATA.DBO.WineRegions.Counties"],
+ 				"States":.["GISDATA.DBO.WineRegions.States"],
+ 				"Designation":.["GISDATA.DBO.WineRegions.Designation"],
+ 				"Level_":.["GISDATA.DBO.WineRegions.Level_"],
+ 				"Name":.["GISDATA.DBO.WineRegions.Name"],
+ 				"WineRegionID":.["GISDATA.DBO.wineRegionsGeneralized.WineRegionID"],
+ 				"TotalPlanted":.["GISDATA.DBO.WineRegions.TotalPlanted"],
+ 				"Acres":.["GISDATA.DBO.WineRegions.Acres"],
+ 				"Varietals":.["GISDATA.DBO.WineRegions.Varietals"],
+ 				"ElevationLow":.["GISDATA.DBO.WineRegions.ElevationLow"],
+ 				"ElevationHi":.["GISDATA.DBO.WineRegions.ElevationHi"],
+ 				"ElevationAve":.["GISDATA.DBO.WineRegions.ElevationAve"],
+ 				"AGSHT":.["GISDATA.DBO.WineRegions.AGSHT"],
+ 				"AGSLT":["GISDATA.DBO.WineRegions.AGSLT"] },
+        "geometry":{
+         "type":"Polygon",
+         "coordinates":.geometry.rings
+        }
+        }
+      ]
+};
+
+toGeoJSON
+
+
+#+END_SRC
+
+* GRASS Processing
+
+I got the data from the zat computer, which itself is a copy of what was on
+lore.  I have to imagine that lore will disapper sometime soon, so I'd better
+get what's needed from that machine.
+
+#+BEGIN_EXAMPLE
+ rsync quinn@zat.lawr.ucdavis.edu:/z3/dwr/gdb/calsimetaw/19[67]?-* . -a -v
+#+END_EXAMPLE
+
+I have determined that of the two methods, a and j,  I ended up using the j
+method for what I sent to Morrie.  I want to come up with a more clean grass
+database that I can use for processing.  So starting with the rsynced process
+above I want to delete all non-essential data from each mapset, and rename
+without the j's.  Here are the files I have:
+
+#+BEGIN_EXAMPLE bash
+for m in 1921-10-01; do
+ g.mapset $m 2> /dev/null ;
+ cnt=`g.mlist pattern='j(ETh|ETo|RF)|(j|jd)(Tn|Tx|PCP|Tm)' | wc -l`;
+ if [[ $cnt -eq 10 ]]; then
+  echo Fixing $m;
+  for r in Tn Tx PCP; do
+    g.remove --q vect=d$r,ad$r;
+    g.rename --q vect=jd$r,d$r;
+    g.remove --q rast=ad$r,d$r;
+    g.rename --q rast=jd$r,d$r;
+  done;
+  for r in ETh ETo PCP RF Tm Tn Tx; do
+    g.remove --q rast=a$r,$r;
+    g.rename --q rast=j$r,$r;
+  done;
+ else
+  echo Skipping $m;
+ fi;
+done
+#+END_EXAMPLE
+
+From 1921 until 1980, only monthly prism data is/was available for processing.
+Therefore, a method to convert this monthly data to daily data was required.  In
+orderr to do this, the ncdc weather station records were retrieved.  The
+individual weather station data was used to perturb the monthly prism data.
+These perturbations included both spatial, and a temporal component.  The
+spatial aspect used the reporting weather stations to provide a delta
+Temperature for that particular day.  The points form the reporting stations
+were then used to create a interpolation (using splines) that predicted the
+expected delta T for the entire region.  This was done for every day to create
+the temporal component of the data.
+
+## 1921-10-01 to 1969-10-02
+
+Originally, the methodology of selecting the appropriate weather station data
+was problematic in the very early parts of the record.  A new method was added
+to compensate for that timeframe.  This data was rerun for this entire range.
+
+## 1969-10-02 to 1980-12-31
+
+During this phase, the original weather station selection critera was not
+changed, as it worked okay.  However, A quick review of this data seems to
+indicate that they are a little different, and so I reran these data for better consistency.
+
+*** Redo
+In order to try that, I've gone back to the dwr-calsimetaw project, and updated
+the methodologies used there in order to redo these years of data. From the
+machine lore.genomecenter, I've retrieved the old weather and prism data, so
+that doesn't have to be recreated from scratch.
+
+With the updated scripts, I reran the calculations, from 1970 through 1999.
+That gives us a 10 year overlap with the daily data.  I also verified that
+these are the same as the previous calculations, because I overlapped the 1969
+data for comparison.  It's good I did, I see that I previously did not do the
+last three months of 69, (the 70 water year)
+
+#+BEGIN_SRC grass
+# In grass from
+s=1989; e=1999;
+make start_year=$s end_year=$e -f ~/dwr-calsimetaw/pre2003/bin/daily.mk csv
+#+END_SRC
+
+So, I then copied that lore data over to the calsimetaw mapset, and we now have
+a complete record that is consistent from 1921-10-01 thru to 1999. This gives us
+a good dataset, with good overlap with the PRISM daily data as well.
+
+
+** 1981-01-01 to current
+
+From 1981-01-01 on, the PRISM dataset is available at a daily basis.  From this
+point on, the these daily estimates are used for the PRISM estimates.  In order
+to make clear that distinction, data after 1981 are included in a seperate GRASS
+LOCATION_NAME, (ca_daily_prism), and have a new naming scheme.  However, the
+names within the mapsets are the same, and users can connect the locations
+together for more long term studies.
+
+
+# GDD Processing
+
+In order to do our Amerine estimates, we need to have growing degree days
+calculated.  We can do this two ways, using the daily estimates, or the monthly
+estimates.  Using the daily estimates is a bit more accurate, and is more
+standard for the entire time, so we'll use that.  I need to create a Makefile
+for this processing, but for now, I'm winging it.
+
+For each day, (from 1921-10-01 => 1980-21-31) we create the GDD with the following:
+
+#+BEGIN_SRC bash
+for m in ????-??-??; do
+  g.mapset $m;
+  r.mapcalc gdd='max(Tm * 9 / 5 + 32 - 50, 0)';
+done
+#+END_SRC
+
+Then for all the monthly data
+
+#+BEGIN_SRC bash
+ for m in ????-??; do
+  g.mapset $m;
+  sum=`echo $m-?? | sed -e 's/^/"gdd@/' -e 's/ /"+"gdd@/g' -e 's/$/"/'`;
+  r.mapcalc gdd="$sum";
+done
+#+END_SRC
+
+#+BEGIN_SRC bash
+for y in `seq 1969 1999`; do
+ g.mapset -c $y;
+ r.mapcalc gdd_4thru10="\"gdd@$y-04\"+\"gdd@$y-05\"+\"gdd@$y-06\"+\"gdd@$y-07\"+\"gdd@$y-08\"+\"gdd@$y-09\"+\"gdd@$y-10\"";
+done
+#+END_SRC
+
+To get the ten year running average
+#+BEGIN_SRC bash
+for y in `seq 1969 1999`; do
+ g.mapset $y;
+ last=$(echo $(let p=$y-9; seq $p $y | sed -e 's/^/gdd_4thru10@/') | tr ' ' ',');
+ r.series method=average
+ output=gdd_4thru10_last10 input=${last};
+done
+
+#+END_SRC
+
+
+For the daily data (ca-prism-daily) we use a different method.
+
+#+BEGIN_SRC bash
+for m in ????????; do
+  g.mapset $m;
+  r.mapcalc gdd='max((tmin+tmax) / 2 * 9 / 5 + 32 - 50, 0)';
+done
+#+END_SRC
+
+Then, to calculate the change in Growing Degree Days
+
+Then for all the monthly data
+
+#+BEGIN_SRC bash
+ for m in ????-??; do
+  g.mapset $m;
+  n=`echo $m | tr -d '-'`;
+  sum=`echo $n?? | sed -e 's/^/"gdd@/' -e 's/ /"+"gdd@/g' -e 's/$/"/'`;
+  r.mapcalc gdd="$sum";
+done
+#+END_SRC
+
+Then for all the yearly data:
+
+#+BEGIN_SRC bash
+for y in `seq 1980 2015`; do
+ g.mapset -c $y;
+ r.mapcalc gdd_4thru10="\"gdd@$y-04\"+\"gdd@$y-05\"+\"gdd@$y-06\"+\"gdd@$y-07\"+\"gdd@$y-08\"+\"gdd@$y-09\"+\"gdd@$y-10\"";
+done
+#+END_SRC
+
+** Importing into PostGIS
+
+I now need to import the grass database into the postgis.  The debian version of
+GDAL doesn't read grass, so I need to make these files.  That's pretty simple.
+I do two, for the monthly and daily data
+
+#+BEGIN_SRC bash
+  # In Grass location calsimetaw
+  first="-d -C";
+  for m in `seq 1922 1999`; do
+   tif=~/amerines-california/gdd/via_monthy/$m.tif;
+   r.out.gdal input=gdd_4thru10@$m output=$tif
+   raster2pgsql -s 3310 -F $first $tif climate.gdd_monthly | psql wine-ontology
+   first="-a"
+  done
+#+END_SRC
+
+#+BEGIN_SRC sql
+create table gdd_daily_pixels as
+with p as (
+ select (st_pixelAsPolygons(rast,1,true)).*
+ from gdd_daily g
+ where g.filename='1981.tif'
+)
+select x,y,geom as boundary from p;
+CREATE INDEX gdd_daily_pixels_gix ON avas USING GIST (boundary);
+#+END_SRC
+
+#+BEGIN_SRC bash
+  # In Grass location ca_prism_daily
+  first="-d -C";
+  for m in `seq 1980 2015`; do
+   tif=~/amerines-california/gdd/via_daily/$m.tif;
+   r.out.gdal input=gdd_4thru10@$m output=$tif
+   raster2pgsql -s 3310 -F $first $tif climate.gdd_daily | psql wine-ontology
+   first="-a"
+  done
+#+END_SRC
+
+#+BEGIN_SRC sql
+create table gdd_daily_pixels as
+with p as (
+ select (st_pixelAsPolygons(rast,1,true)).*
+ from gdd_daily g
+ where g.filename='1981.tif'
+)
+select x,y,geom as boundary from p;
+CREATE INDEX gdd_daily_pixels_gix ON avas USING GIST (boundary);
+
+#+END_SRC
+
+#+name: intersection
+#+header: :engine postgresql :database wine-ontology
+#+BEGIN_SRC sql
+create table climate.avas_pixels as
+select avas_id,x,y,
+st_area(st_intersection(a.boundary,p.boundary)) as area
+from climate.avas a join
+climate.gdd_daily_pixels p on st_intersects(a.boundary,p.boundary);
+#+END_SRC
+
+#+RESULTS: intersection
+
+#+name: gdd_by_ava
+#+header: :engine postgresql :database wine-ontology
+#+BEGIN_SRC sql
+set search_path=climate,public;
+create materialized view gdd_by_ava as
+with m as (
+ select avas_id,x,y,area,'monthly'::text as source,
+ regexp_replace(r.filename,'.tif','') as year,
+ st_value(r.rast,x,y) as gdd
+ from avas_pixels p,gdd_monthly r
+),
+d as (
+ select avas_id,x,y,area,'daily'::text as source,
+ regexp_replace(r.filename,'.tif','') as year,
+ st_value(r.rast,x,y) as gdd
+ from avas_pixels p,gdd_daily r
+),
+a as (select * from m union select * from d),
+g as (select
+avas_id,year,source,
+(sum(gdd*area)/sum(area))::integer as gdd
+from a
+group by avas_id,year,source
+order by avas_id,year,source
+)
+select * from g;
+#+END_SRC
+
+#+RESULTS: gdd_by_ava
+| SET          |
+|--------------|
+| SELECT 15029 |
+
+From the we can look at the  running 10 year averages, to look at some AVAs with
+the average and largest changes in their ten year averages;
+
+#+name: gdd10_by_ava
+#+header: :engine postgresql :database wine-ontology
+#+BEGIN_SRC sql
+create materialized view climate.gdd10_by_ava as
+  select avas_id,e.year,source,
+  (avg(s.gdd))::integer as gdd
+  from climate.gdd_by_ava s join climate.gdd_by_ava e using (avas_id,source)
+  where s.year::integer < e.year::integer
+  and (e.year::integer - s.year::integer) <=10
+  group by avas_id,source,e.year
+  having count(*)=10;
+#+END_SRC
+
+#+RESULTS: gdd10_by_ava
+| SELECT 12369 |
+|--------------|
+
+#+name: gdd_by_ava_ct
+#+header: :engine postgresql :database wine-ontology
+#+BEGIN_SRC sql
+create view gdd10_by_ava_range as
+with a as (
+ select
+ avas_id,year,source,gdd,
+ min(gdd) OVER W,
+ max(gdd) over W
+ from gdd10_by_ava
+ window w as (partition by avas_id,source)
+),
+n as (
+ select avas_id,source,min(year),gdd
+ from a where gdd=min group by 1,2,4
+),
+x as (
+ select avas_id,source,max(year),gdd
+ from a where gdd=max group by 1,2,4
+)
+select avas_id,source,n.min as n_year,n.gdd
+as min,x.max as x_year,x.gdd as max from n join x using (avas_id,source);
+#+END_SRC
+
+#+name: gdd_by_ava_ct
+#+header: :engine postgresql :database wine-ontology
+#+BEGIN_SRC sql
+set search_path=climate,public;
+create or replace view gdd_by_ava_ct as
+select * from  crosstab('select year,source,name,gdd from avas join gdd_by_ava using (avas_id) where source=''monthly'' order by 1,2','select distinct name from gdd_by_ava join avas using (avas_id) where source=''monthly'' order by 1')
+as ct(year integer,source text,"Adelaida District" float,"Alta Mesa"
+float,"Anderson Valley" float,"Annapolis" float,"Antelope Valley of the
+California High Desert" float,"Arroyo Grande Valley" float,"Arroyo Seco"
+float,"Atlas Peak" float,"Ballard Canyon" float,"Ben Lomond Mountain"
+float,"Benmore Valley" float,"Bennett Valley" float,"Big Valley District-Lake
+County" float,"Borden Ranch" float,"Calistoga" float,"Capay Valley"
+float,"Carmel Valley" float,"CaShenandoah Valley" float,"Central Coast"
+float,"Chalk Hill" float,"Chalone" float,"Chiles Valley" float,"Cienega Valley"
+float,"Clarksburg" float,"Clear Lake" float,"Clements Hills" float,"Cole Ranch"
+float,"Coombsville" float,"Cosumnes River" float,"Covelo" float,"Creston
+District" float,"Cucamonga Valley" float,"Diablo Grande" float,"Diamond Mountain
+District" float,"Dos Rios" float,"Dry Creek Valley" float,"Dunnigan Hills"
+float,"Edna Valley" float,"El Dorado" float,"El Pomar District" float,"Fair
+Play" float,"Fiddletown" float,"Fort Ross-Seaview" float,"Freestone-Occidental"
+float,"Green Valley" float,"Guenoc Valley" float,"Hames Valley" float,"Happy
+Canyon" float,"High Valley" float,"Howell Mountain" float,"Inwood Valley"
+float,"Jahant" float,"Kelsey Bench-Lake County" float,"Knights Valley"
+float,"Leona Valley" float,"Lime Kiln Valley" float,"Livermore Valley"
+float,"Lodi" float,"Los Carneros" float,"Madera" float,"Malibu Coast"
+float,"Manton Valley" float,"McDowell Valley" float,"Mendocino" float,"Mendocino
+Ridge" float,"Merritt Island" float,"Mokelumne River" float,"Monterey"
+float,"Moon Mountain District Sonoma County" float,"Mount Veeder" float,"Mt
+Harlan" float,"Napa Valley" float,"North Coast" float,"Northern Sonoma"
+float,"North Yuba" float,"Oak Knoll District" float,"Oakville" float,"Pacheco
+Pass" float,"Paicines" float,"Paso Robles" float,"Paso Robles Estrella District"
+float,"Paso Robles Geneseo District" float,"Paso Robles Highlands District"
+float,"Paso Robles Willow Creek District" float,"Petaluma Gap" float,"Pine
+Mountain-Cloverdale Peak" float,"Potter Valley" float,"Red Hills Lake County"
+float,"Redwood Valley" float,"River Junction" float,"Rockpile" float,"Rogue
+Valley" float,"Russian River Valley" float,"Rutherford" float,"Saint Helena"
+float,"Salado Creek" float,"San Antonio Valley" float,"San Benito" float,"San
+Bernabe" float,"San Francisco Bay" float,"San Juan Creek" float,"San Lucas"
+float,"San Miguel District" float,"Santa Clara Valley" float,"Santa Cruz
+Mountains" float,"Santa Lucia Highlands" float,"Santa Margarita Ranch"
+float,"Santa Maria Valley" float,"Santa Ynez Valley" float,"San Ysidro District"
+float,"Sebastopol Hills" float,"Seiad Valley" float,"Sierra Foothills"
+float,"Sierra Pelona Valley" float,"Sloughhouse" float,"Solano County Green
+Valley" float,"Sonoma Coast" float,"Sonoma Mountain" float,"Sonoma Valley"
+float,"Southern Oregon" float,"Spring Mountain District" float,"Stags Leap
+District" float,"Sta. Rita Hills" float,"Suisun Valley" float,"Templeton Gap
+District" float,"Tracy Hills" float,"Trinity Lakes" float,"West Sonoma Coast"
+float,"Wild Horse Valley" float,"Willow Creek" float,"York Mountain"
+float,"Yorkville Highlands" float,"Yountville" float)
+union
+select * from  crosstab('select year,source,name,gdd from avas join gdd_by_ava using (avas_id) where source=''daily'' order by 1,2','select distinct name from gdd_by_ava join avas using (avas_id) where source=''daily'' order by 1')
+as ct(year integer,source text,"Adelaida District" float,"Alta Mesa"
+float,"Anderson Valley" float,"Annapolis" float,"Antelope Valley of the
+California High Desert" float,"Arroyo Grande Valley" float,"Arroyo Seco"
+float,"Atlas Peak" float,"Ballard Canyon" float,"Ben Lomond Mountain"
+float,"Benmore Valley" float,"Bennett Valley" float,"Big Valley District-Lake
+County" float,"Borden Ranch" float,"Calistoga" float,"Capay Valley"
+float,"Carmel Valley" float,"CaShenandoah Valley" float,"Central Coast"
+float,"Chalk Hill" float,"Chalone" float,"Chiles Valley" float,"Cienega Valley"
+float,"Clarksburg" float,"Clear Lake" float,"Clements Hills" float,"Cole Ranch"
+float,"Coombsville" float,"Cosumnes River" float,"Covelo" float,"Creston
+District" float,"Cucamonga Valley" float,"Diablo Grande" float,"Diamond Mountain
+District" float,"Dos Rios" float,"Dry Creek Valley" float,"Dunnigan Hills"
+float,"Edna Valley" float,"El Dorado" float,"El Pomar District" float,"Fair
+Play" float,"Fiddletown" float,"Fort Ross-Seaview" float,"Freestone-Occidental"
+float,"Green Valley" float,"Guenoc Valley" float,"Hames Valley" float,"Happy
+Canyon" float,"High Valley" float,"Howell Mountain" float,"Inwood Valley"
+float,"Jahant" float,"Kelsey Bench-Lake County" float,"Knights Valley"
+float,"Leona Valley" float,"Lime Kiln Valley" float,"Livermore Valley"
+float,"Lodi" float,"Los Carneros" float,"Madera" float,"Malibu Coast"
+float,"Manton Valley" float,"McDowell Valley" float,"Mendocino" float,"Mendocino
+Ridge" float,"Merritt Island" float,"Mokelumne River" float,"Monterey"
+float,"Moon Mountain District Sonoma County" float,"Mount Veeder" float,"Mt
+Harlan" float,"Napa Valley" float,"North Coast" float,"Northern Sonoma"
+float,"North Yuba" float,"Oak Knoll District" float,"Oakville" float,"Pacheco
+Pass" float,"Paicines" float,"Paso Robles" float,"Paso Robles Estrella District"
+float,"Paso Robles Geneseo District" float,"Paso Robles Highlands District"
+float,"Paso Robles Willow Creek District" float,"Petaluma Gap" float,"Pine
+Mountain-Cloverdale Peak" float,"Potter Valley" float,"Red Hills Lake County"
+float,"Redwood Valley" float,"River Junction" float,"Rockpile" float,"Rogue
+Valley" float,"Russian River Valley" float,"Rutherford" float,"Saint Helena"
+float,"Salado Creek" float,"San Antonio Valley" float,"San Benito" float,"San
+Bernabe" float,"San Francisco Bay" float,"San Juan Creek" float,"San Lucas"
+float,"San Miguel District" float,"Santa Clara Valley" float,"Santa Cruz
+Mountains" float,"Santa Lucia Highlands" float,"Santa Margarita Ranch"
+float,"Santa Maria Valley" float,"Santa Ynez Valley" float,"San Ysidro District"
+float,"Sebastopol Hills" float,"Seiad Valley" float,"Sierra Foothills"
+float,"Sierra Pelona Valley" float,"Sloughhouse" float,"Solano County Green
+Valley" float,"Sonoma Coast" float,"Sonoma Mountain" float,"Sonoma Valley"
+float,"Southern Oregon" float,"Spring Mountain District" float,"Stags Leap
+District" float,"Sta. Rita Hills" float,"Suisun Valley" float,"Templeton Gap
+District" float,"Tracy Hills" float,"Trinity Lakes" float,"West Sonoma Coast"
+float,"Wild Horse Valley" float,"Willow Creek" float,"York Mountain"
+float,"Yorkville Highlands" float,"Yountville" float);
+
+create or replace view gdd10_by_ava_ct as
+select * from  crosstab('select year,source,name,gdd from avas join gdd10_by_ava using (avas_id) where source=''monthly'' order by 1,2','select distinct name from gdd10_by_ava join avas using (avas_id) where source=''monthly'' order by 1')
+as ct(year integer,source text,"Adelaida District" float,"Alta Mesa"
+float,"Anderson Valley" float,"Annapolis" float,"Antelope Valley of the
+California High Desert" float,"Arroyo Grande Valley" float,"Arroyo Seco"
+float,"Atlas Peak" float,"Ballard Canyon" float,"Ben Lomond Mountain"
+float,"Benmore Valley" float,"Bennett Valley" float,"Big Valley District-Lake
+County" float,"Borden Ranch" float,"Calistoga" float,"Capay Valley"
+float,"Carmel Valley" float,"CaShenandoah Valley" float,"Central Coast"
+float,"Chalk Hill" float,"Chalone" float,"Chiles Valley" float,"Cienega Valley"
+float,"Clarksburg" float,"Clear Lake" float,"Clements Hills" float,"Cole Ranch"
+float,"Coombsville" float,"Cosumnes River" float,"Covelo" float,"Creston
+District" float,"Cucamonga Valley" float,"Diablo Grande" float,"Diamond Mountain
+District" float,"Dos Rios" float,"Dry Creek Valley" float,"Dunnigan Hills"
+float,"Edna Valley" float,"El Dorado" float,"El Pomar District" float,"Fair
+Play" float,"Fiddletown" float,"Fort Ross-Seaview" float,"Freestone-Occidental"
+float,"Green Valley" float,"Guenoc Valley" float,"Hames Valley" float,"Happy
+Canyon" float,"High Valley" float,"Howell Mountain" float,"Inwood Valley"
+float,"Jahant" float,"Kelsey Bench-Lake County" float,"Knights Valley"
+float,"Leona Valley" float,"Lime Kiln Valley" float,"Livermore Valley"
+float,"Lodi" float,"Los Carneros" float,"Madera" float,"Malibu Coast"
+float,"Manton Valley" float,"McDowell Valley" float,"Mendocino" float,"Mendocino
+Ridge" float,"Merritt Island" float,"Mokelumne River" float,"Monterey"
+float,"Moon Mountain District Sonoma County" float,"Mount Veeder" float,"Mt
+Harlan" float,"Napa Valley" float,"North Coast" float,"Northern Sonoma"
+float,"North Yuba" float,"Oak Knoll District" float,"Oakville" float,"Pacheco
+Pass" float,"Paicines" float,"Paso Robles" float,"Paso Robles Estrella District"
+float,"Paso Robles Geneseo District" float,"Paso Robles Highlands District"
+float,"Paso Robles Willow Creek District" float,"Petaluma Gap" float,"Pine
+Mountain-Cloverdale Peak" float,"Potter Valley" float,"Red Hills Lake County"
+float,"Redwood Valley" float,"River Junction" float,"Rockpile" float,"Rogue
+Valley" float,"Russian River Valley" float,"Rutherford" float,"Saint Helena"
+float,"Salado Creek" float,"San Antonio Valley" float,"San Benito" float,"San
+Bernabe" float,"San Francisco Bay" float,"San Juan Creek" float,"San Lucas"
+float,"San Miguel District" float,"Santa Clara Valley" float,"Santa Cruz
+Mountains" float,"Santa Lucia Highlands" float,"Santa Margarita Ranch"
+float,"Santa Maria Valley" float,"Santa Ynez Valley" float,"San Ysidro District"
+float,"Sebastopol Hills" float,"Seiad Valley" float,"Sierra Foothills"
+float,"Sierra Pelona Valley" float,"Sloughhouse" float,"Solano County Green
+Valley" float,"Sonoma Coast" float,"Sonoma Mountain" float,"Sonoma Valley"
+float,"Southern Oregon" float,"Spring Mountain District" float,"Stags Leap
+District" float,"Sta. Rita Hills" float,"Suisun Valley" float,"Templeton Gap
+District" float,"Tracy Hills" float,"Trinity Lakes" float,"West Sonoma Coast"
+float,"Wild Horse Valley" float,"Willow Creek" float,"York Mountain"
+float,"Yorkville Highlands" float,"Yountville" float)
+union
+select * from  crosstab('select year,source,name,gdd from avas join gdd10_by_ava using (avas_id) where source=''daily'' order by 1,2','select distinct name from gdd10_by_ava join avas using (avas_id) where source=''daily'' order by 1')
+as ct(year integer,source text,"Adelaida District" float,"Alta Mesa"
+float,"Anderson Valley" float,"Annapolis" float,"Antelope Valley of the
+California High Desert" float,"Arroyo Grande Valley" float,"Arroyo Seco"
+float,"Atlas Peak" float,"Ballard Canyon" float,"Ben Lomond Mountain"
+float,"Benmore Valley" float,"Bennett Valley" float,"Big Valley District-Lake
+County" float,"Borden Ranch" float,"Calistoga" float,"Capay Valley"
+float,"Carmel Valley" float,"CaShenandoah Valley" float,"Central Coast"
+float,"Chalk Hill" float,"Chalone" float,"Chiles Valley" float,"Cienega Valley"
+float,"Clarksburg" float,"Clear Lake" float,"Clements Hills" float,"Cole Ranch"
+float,"Coombsville" float,"Cosumnes River" float,"Covelo" float,"Creston
+District" float,"Cucamonga Valley" float,"Diablo Grande" float,"Diamond Mountain
+District" float,"Dos Rios" float,"Dry Creek Valley" float,"Dunnigan Hills"
+float,"Edna Valley" float,"El Dorado" float,"El Pomar District" float,"Fair
+Play" float,"Fiddletown" float,"Fort Ross-Seaview" float,"Freestone-Occidental"
+float,"Green Valley" float,"Guenoc Valley" float,"Hames Valley" float,"Happy
+Canyon" float,"High Valley" float,"Howell Mountain" float,"Inwood Valley"
+float,"Jahant" float,"Kelsey Bench-Lake County" float,"Knights Valley"
+float,"Leona Valley" float,"Lime Kiln Valley" float,"Livermore Valley"
+float,"Lodi" float,"Los Carneros" float,"Madera" float,"Malibu Coast"
+float,"Manton Valley" float,"McDowell Valley" float,"Mendocino" float,"Mendocino
+Ridge" float,"Merritt Island" float,"Mokelumne River" float,"Monterey"
+float,"Moon Mountain District Sonoma County" float,"Mount Veeder" float,"Mt
+Harlan" float,"Napa Valley" float,"North Coast" float,"Northern Sonoma"
+float,"North Yuba" float,"Oak Knoll District" float,"Oakville" float,"Pacheco
+Pass" float,"Paicines" float,"Paso Robles" float,"Paso Robles Estrella District"
+float,"Paso Robles Geneseo District" float,"Paso Robles Highlands District"
+float,"Paso Robles Willow Creek District" float,"Petaluma Gap" float,"Pine
+Mountain-Cloverdale Peak" float,"Potter Valley" float,"Red Hills Lake County"
+float,"Redwood Valley" float,"River Junction" float,"Rockpile" float,"Rogue
+Valley" float,"Russian River Valley" float,"Rutherford" float,"Saint Helena"
+float,"Salado Creek" float,"San Antonio Valley" float,"San Benito" float,"San
+Bernabe" float,"San Francisco Bay" float,"San Juan Creek" float,"San Lucas"
+float,"San Miguel District" float,"Santa Clara Valley" float,"Santa Cruz
+Mountains" float,"Santa Lucia Highlands" float,"Santa Margarita Ranch"
+float,"Santa Maria Valley" float,"Santa Ynez Valley" float,"San Ysidro District"
+float,"Sebastopol Hills" float,"Seiad Valley" float,"Sierra Foothills"
+float,"Sierra Pelona Valley" float,"Sloughhouse" float,"Solano County Green
+Valley" float,"Sonoma Coast" float,"Sonoma Mountain" float,"Sonoma Valley"
+float,"Southern Oregon" float,"Spring Mountain District" float,"Stags Leap
+District" float,"Sta. Rita Hills" float,"Suisun Valley" float,"Templeton Gap
+District" float,"Tracy Hills" float,"Trinity Lakes" float,"West Sonoma Coast"
+float,"Wild Horse Valley" float,"Willow Creek" float,"York Mountain"
+float,"Yorkville Highlands" float,"Yountville" float);
+#+END_SRC
+
+#+RESULTS: gdd_by_ava_ct
+| SET         |
+|-------------|
+| CREATE VIEW |
+| CREATE VIEW |

@@ -1,0 +1,222 @@
+#+SETUPFILE: /home/quinn/org-html-themes/setup/theme-bigblow.setup
+#+TITLE: Sufia Project
+
+* Sufia
+
+The development version of sufia is located at
+[[http://quinn-dev.library.ucdavis.edu:3000/]]. This is purely for
+testing, and the data comes and goes.  Anoyone in the Library is
+free to try this out. The system is currently wide open. Users can freely delete
+everything in the system.  I need to quickly have a solution where we sandbox
+this, and update the datasets on a nightly basis.
+
+** Components
+
+Sufia uses some major components, and where available, the
+administrative interfaces to these are also made available.  These
+include:
+
++ [[http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar][Fedora]] - the persistent object repository
++ [[http://quinn-dev.library.ucdavis.edu:8983/solr/index.html#/hydra-development][solr]] - The text (and other ) indexing and searching framework
++ mysql - The sufia instance database
+
+** Metadata
+
+ Sufia, over fedora 4.0, is an instance of a [[https://www.w3.org/TR/ldp/][W3c Linked Data Platform]].  So assets
+ within the system conform to this standard.  Starting with Fedora4, the assets
+ are also described in the [[http://matienzo.org/storage/2015/2015Dec-CNI-PCDM.pdf][Portland Data Model]], (or the [[https://github.com/duraspace/pcdm/wiki][Wiki]] ) which describes how to organize
+ complex digital models.  Basic discovery metadata is also supported with Dublin Core.
+ Finally, Fedora itself maintains some basic information about the assets.  You
+ can see how these are represented below in the following examples.
+
+*** Examples
+
+ I'm going to document a few examples of data uploading.  The first few will be
+ very simple installs of one or two files.  Then, we'll move to batch file
+ uploads.
+
+**** Single Image
+
+ [[http://quinn-dev.library.ucdavis.edu:3000/concern/works/3t945q76s][Amerine 009]] is a simple example of adding a single image into sufia.  In this
+ example, I didn't add any metadata except the most basic information.  This
+ dataset is just a simple image file.  You can also find this assest in [[http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/3t/94/5q/76/3t945q76s][Fedora]].
+ This is the container with the Dublin Core components.  Under this container,
+ you can follow the location to the individual files.
+
+**** California Counties
+
+ Next, I'm going to look at adding [[https://github.com/CSTARS/california-counties][California Counties]] from a nice github data
+ repository.  I'll imagine, I want to include the tar file, the geojson, and
+ maybe a graphic.  My first pass at this came up with this [[http://quinn-dev.library.ucdavis.edu:3000/concern/works/5d86p020k][Sufia Instance]].  I
+ am starting to get some ideas about sufia via this:
+ + There are few controlled vocabularies in this setup.  Even things like
+   language, do not use a standard methodology for naming.  Keywords and subjects
+   are both non constrained.
+ + We will probably need to update the forms that are used in order to come up
+   with a better workflow.  Right now there is too much openendedness regarding
+   what can be added
+
+ From this record, you can start to get an idea of how the data is stored between
+ sufai and fedora. For example, you can see that the sufia identifier for this
+ work is _5d86p020k_
+ In Fedora, there is a [[http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/5d/86/p0/20/5d86p020k][corresponding entry]]. This entry shares the same
+ identifier.  Note too, that the Dublin Core metadata entries from the sufia
+ instance are entered as values with the fedora resource.  These include:
+	#+BEGIN_EXAMPLE
+ dc: contributor University of California, Davis
+ dc: creator Hart, Quinn
+ dc: description
+ This dataset consists of a representation of California's county boundaries. The data is current up to 2009.
+ dc: language English
+ dc: relation
+ administrative boundaries
+ counties
+ dc: subject Administrative Boundaries
+	#+END_EXAMPLE
+
+ It also includes direct items from the PCDM metadata standard:
+ #+BEGIN_EXAMPLE
+ ns001: hasModel
+ Work
+ ns002: created
+ 2015-02-10
+ ns002: dateSubmitted
+ 2016-10-29T01:32:19.140250561+00:00
+ ns002: modified
+ 2016-10-29T01:35:36.680314318+00:00
+ ns002: rights
+ http://creativecommons.org/publicdomain/zero/1.0/
+ ns002: source
+ Recovered from the California Spatial Information Library
+ ns002: title
+ California Counties
+ ns002: type
+ Map or Cartographic Material
+ ns003: accessControl
+ http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/53/63/72/5a/5363725a-7e2a-4b60-b2e1-cd63050e5abb
+ ns004: hasMember
+ http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/gt/54/kn/00/gt54kn002
+ http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/q5/24/jn/76/q524jn76v
+ http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/xw/42/n7/88/xw42n7888
+ ns005: dpt
+ qjhart@ucdavis.edu
+ ns008: first
+ http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/5d/86/p0/20/5d86p020k/list_source#g69984672186100
+ ns008: last
+ http://quinn-dev.library.ucdavis.edu:8984/fcrepo/rest/fubar/5d/86/p0/20/5d86p020k/list_source#g69984705473520
+ #+END_EXAMPLE
+
+** Import / Export
+
+ IMO it is absolutely crucial, that we understand how we can import and export
+ data to and from sufia/fedora.  This is something we need to get a handle one
+ directly, because we want to be able to quickly test alternative solutions, and
+ be willing to quicly jettison a tool that is not working.  Fedora has
+ instructions for [[https://wiki.duraspace.org/display/FEDORA4x/Import+and+Export+Tools][Import and Export Tools]], and that should be one of the first
+ this we try.  We need to verifty this can work with and without sufia as well.
+
+
+** Installation
+
+ The project [[https://github.com/mlibrary/sufia-compose][sufia-compose]] has a nice docker installation of sufia,
+ and that's is what I used for the install.  Basically, this is
+ docker-cpompose installation that sets up 5 docker containers.  The
+ containers include seperate fedora, redis, solr and mysql components
+ as well as the sufia installation.
+
+ #+BEGIN_EXAMPLE
+ quinn@quinn-dev:~/sufia-compose$ docker ps
+ CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                    NAMES
+ 874d0603296f        sufiacompose_web       "bin/rails server --p"   20 hours ago        Up 5 seconds        0.0.0.0:3000->3000/tcp   sufiacompose_web_1
+ aafc614e629b        botimer/fcrepo:4.5.1   "/docker-entrypoint.s"   21 hours ago        Up 21 hours         0.0.0.0:8984->8080/tcp   sufiacompose_fcrepo_1
+ f25ecd2a47a8        solr:5.5               "docker-entrypoint.sh"   21 hours ago        Up 21 hours         0.0.0.0:8983->8983/tcp   sufiacompose_solr_1
+ 7d3333e06635        redis:3                "docker-entrypoint.sh"   21 hours ago        Up 21 hours         0.0.0.0:6379->6379/tcp   sufiacompose_redis_1
+ 34d825840cbf        mysql:5.6              "docker-entrypoint.sh"   21 hours ago        Up 21 hours         3306/tcp                 sufiacompose_mysql_1
+ #+END_EXAMPLE
+
+
+ There are a few modifications two the system that need to be slightly
+ modified.  First, include path on rake commands, like to create the database
+
+ #+BEGIN_SRC bash
+ dc run web bin/rake db:create db:migrate
+ #+END_SRC
+
+ Also, I added the following configuration changes to the initial
+ configurations.  These are some minor changes to some of the
+ configuration files, and removal of unison from the setup entirely.
+ I've also modifed the docker-profile to remove docker-machine from the
+ system.
+
+ #+BEGIN_EXAMPLE
+ diff --git a/config/blacklight.yml b/config/blacklight.yml
+ index 520e73c..0d63acf 100644
+ --- a/config/blacklight.yml
+ +++ b/config/blacklight.yml
+ @@ -2,3 +2,3 @@ development:
+		adapter: solr
+ -  url: http://solr:8983/solr/development
+ +  url: http://solr:8983/solr/hydra-development
+	test: &test
+ diff --git a/config/fedora.yml b/config/fedora.yml
+ index ecdc9f9..6ffd316 100644
+ --- a/config/fedora.yml
+ +++ b/config/fedora.yml
+ @@ -4,3 +4,3 @@ development:
+		url: http://fcrepo:8080/fcrepo/rest
+ -  base_path: /
+ +  base_path: /fubar
+	test:
+ diff --git a/config/initializers/sufia.rb b/config/initializers/sufia.rb
+ index 642a5ee..bf9acf7 100644
+ --- a/config/initializers/sufia.rb
+ +++ b/config/initializers/sufia.rb
+ @@ -53,3 +53,3 @@ Sufia.config do |config|
+		# Specify the path to the file characterization tool:
+ -  # config.fits_path = "fits.sh"
+ +  config.fits_path = "/opt/fits-0.8.5/fits.sh"
+ diff --git a/config/solr.yml b/config/solr.yml
+ index 4cb3523..29f7297 100644
+ --- a/config/solr.yml
+ +++ b/config/solr.yml
+ @@ -2,3 +2,3 @@
+	development:
+ -  url: http://127.0.0.1:<%= ENV['SOLR_TEST_PORT'] || 8983 %>/solr/hydra-development
+ +  url: http://solr:<%= ENV['SOLR_TEST_PORT'] || 8983 %>/solr/hydra-development
+	test:
+ diff --git a/docker-compose.yml b/docker-compose.yml
+ index f0d9128..d0eff01 100644
+ --- a/docker-compose.yml
+ +++ b/docker-compose.yml
+ @@ -8,7 +8,6 @@ services:
+					volumes:
+ -            # Mount the volume from the unison container instead of host path
+ -            # - .:/usr/src/app
+ +            - .:/usr/src/app
+							- bundle:/bundle
+ -        volumes_from:
+ -            - unison
+ +#        volumes_from:
+ +#            - unison
+					depends_on:
+ @@ -39,11 +38,11 @@ services:
+						- "8984:8080"
+ -    unison:
+ -        # image: leighmcculloch/unison
+ -        image: botimer/unison-fsmonitor
+ -        environment:
+ -            - UNISON_PATH=/usr/src/app
+ -        volumes:
+ -            - /usr/src/app
+ -        ports:
+ -            - "5000:5000"
+ +#    unison:
+ +#        # image: leighmcculloch/unison
+ +#        image: botimer/unison-fsmonitor
+ +#        environment:
+ +#            - UNISON_PATH=/usr/src/app
+ +#        volumes:
+ +#            - /usr/src/app
+ +#        ports:
+ +#            - "5000:5000"
+ #+END_EXAMPLE

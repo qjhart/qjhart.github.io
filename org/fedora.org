@@ -1,0 +1,71 @@
+* Fedora
+
+** Fedora Camel
+
+Fedora Camel is a mm
+
+** Fedora API-X
+
+API-X is the extension to Fedora that allows other agencies to use FEDORA in
+more sophisticated settings.  This [[https://github.com/fcrepo4-labs/fcrepo-api-x/blob/master/src/site/markdown/apix-design-overview.md][technical overview]] gives some great insight
+into what they are looking to do with this component.
+
+
+[[https://github.com/emetsger/apix-docker-test][apix-docker-test]] is a docker configuration which tests fedora along with triple
+store pushes to fuseki and indexing as well.  Also includes fedora API-X
+extenstions.
+
+[[https://github.com/fcrepo4-labs/fcrepo-api-x-demo][fcrepo-apix-demo]] is another docker-compse setup that gives some demonstration of
+what fedora API-X is meant to acomplish.  This is actually really similar to the
+above config, and maybe it's a replacement.  This is an example direct from the
+fcrepo-labs.  There are examples in this demo that show how other services can
+hang from the fedora repeat
+
+
+** Curation Concerns
+
+[[https://github.com/projecthydra/curation_concerns][Curation Concerns]] is a rails implementation that adds a CRUD style interface to
+a rails application.  It also provides a generator for defining objects with
+custom workflows.  It is used by sufia, plum, pumpkin, hydra-in-a-box.  It is
+written by the projecthydra team.
+
+What is a workflow?  A workflow is a defined state machine, that describes how
+an object can move through the system.  by defining different workflows, we can
+define what steps are taken in the process.  Im some ways, this is what
+seperates the different projects that use curation concerns.
+
+
+[[https://github.com/loris-imageserver/loris-docker][Loris]] is an implementation of the IIIF Image API. This is a service that can
+serve images in multiple sizes, formats, etc.  It is available as a docker file
+that can be used in other frameworks.  It is used by plum
+
+
+** Hydra
+
+
+
+** Plum / Pumpkin
+
+These projects are more heavily curated then the self-repositories, like sufia
+for example.  The projects below are for scanned books.
+
+[[https://github.com/pulibrary/plum][Plum]] is a hydra head that is designed for curation of scanned books. The
+workflow goes from pending; through metadata_review, final_review, and complete.
+There is also a takedown workflow.  Plum is maintained by the Princeton Library
+
+[[https://github.com/IU-Libraries-Joint-Development/pumpkin][Pumpkin]] is a fork of the plum hydra head.  IT's used by the University of
+Indiana library
+
+
+** Hydra-in-a-box
+
+[[http://hydrainabox.projecthydra.org/][Hydra in a box]], is in some ways the next sufia generation.  It's still dedicated
+to self-repository information, but includes the latest features from hydra.  It
+should probably be the replacement for the sufia.
+
+[[https://github.com/projecthydra-labs/hyku][Hyku]] is the implementation of hydra-in-a-box.  The docker-compse file for this
+is pretty complicated, but I've gotten the beginnings of that to work, however
+solr seems to get not created.  Their docker-config is more along the lines of a
+test setup not a dev setup.
+
+** Blacklight
