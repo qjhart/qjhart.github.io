@@ -447,3 +447,18 @@ Automated public control - Enter once  resuse often
 Can we associated ORCID's with a CAS user, so that we can identify someone's
 ORCID through their CAS account?
 *** 2018-06-26 Tuesday
+** 2018-07 July
+*** 2018-07-13 Friday
+**** beta.observable.com
+
+This site [[https://beta.observablehq.com/@qjhart/orcid-public-api][Observable]] is a super interesting javascript notebook, that I need to
+read more about.  It might be a nice method for sharing code snippets
+
+**** lovefield
+
+I got reinterested in [[https://github.com/google/lovefield/tree/master/docs/spec][Lovefield.]]  I think it's worth thinking about for our
+orcid project, and maybe something to test in for the Observable site.
+
+**** Google Cloud SQL
+
+I also thought about using Google Cloud SQL as a source for visualization using data studio.
